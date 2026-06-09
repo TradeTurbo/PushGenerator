@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Push Generator · Rappi Turbo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --rappi:#FF441F;--turbo:#FF6B35;--bg:#0A0A0A;--surface:#141414;--surface2:#1E1E1E;
+  --border:#2A2A2A;--text:#F0F0F0;--muted:#666;--dim:#999;
+  --green:#00D084;--yellow:#FFD600;--blue:#4D9FFF;--pink:#FF6B8A;
+  --r:12px;--mono:'DM Mono',monospace;--display:'Syne',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--display);min-height:100vh}
+/* HEADER */
+header{border-bottom:1px solid var(--border);padding:18px 28px;display:flex;align-items:center;gap:14px;position:sticky;top:0;background:rgba(10,10,10,0.94);backdrop-filter:blur(12px);z-index:100}
+.logo{width:34px;height:34px;background:var(--rappi);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;flex-shrink:0}
+header h1{font-size:14px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+header small{font-size:11px;color:var(--muted);font-family:var(--mono);display:block}
+.hright{margin-left:auto;display:flex;align-items:center;gap:12px}
+.kdot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block}
+.klabel{font-size:11px;color:var(--muted);font-family:var(--mono);display:flex;align-items:center;gap:6px}
+.chkey{font-size:11px;color:var(--rappi);font-family:var(--mono);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline}
+/* MODE TABS */
+.mode-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 28px;background:var(--surface)}
+.mtab{padding:12px 20px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;font-family:var(--display)}
+.mtab.active{color:var(--rappi);border-bottom-color:var(--rappi)}
+.mtab:hover{color:var(--text)}
+/* API SETUP */
+#api-setup{max-width:460px;margin:80px auto;padding:0 24px;text-align:center}
+#api-setup h2{font-size:26px;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,var(--rappi),var(--turbo));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+#api-setup p{color:var(--muted);font-size:13px;margin-bottom:28px;line-height:1.6}
+.api-row{display:flex;gap:8px;margin-bottom:12px}
+.api-inp{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:11px 14px;color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:border-color .2s}
+.api-inp:focus{border-color:var(--rappi)}
+.api-note{font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.6}
+/* BTN */
+.btn{background:var(--rappi);color:#fff;border:none;border-radius:var(--r);padding:11px 18px;font-family:var(--display);font-size:13px;font-weight:700;cursor:pointer;transition:opacity .2s,transform .1s;white-space:nowrap}
+.btn:hover{opacity:.88}.btn:active{transform:scale(.97)}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-sm{padding:6px 12px;font-size:11px;border-radius:6px}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--dim)}
+.btn-outline:hover{border-color:#444;color:var(--text);opacity:1}
+.btn-green{background:var(--green);color:#000}
+/* LAYOUT */
+#mode-single,#mode-week{display:none;max-width:1120px;margin:0 auto;padding:28px 24px 80px;gap:22px}
+#mode-single.active,#mode-week.active{display:grid}
+#mode-single.active{grid-template-columns:1fr 1fr;align-items:start}
+#mode-week.active{grid-template-columns:360px 1fr;align-items:start}
+@media(max-width:800px){#mode-single.active,#mode-week.active{grid-template-columns:1fr}header{padding:14px 16px}.mode-tabs{padding:0 16px}}
+/* PANEL */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.ph{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ph h2{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--dim)}
+.pb{padding:18px;display:flex;flex-direction:column;gap:14px}
+/* FORM */
+label.lbl{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-bottom:5px}
+select,input[type=text],input[type=number],textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-family:var(--display);font-size:13px;outline:none;transition:border-color .2s;appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' fill='none'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%23666' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:30px;cursor:pointer}
+select:focus,input:focus,textarea:focus{border-color:var(--rappi)}
+textarea{resize:vertical;min-height:72px;line-height:1.5}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hr{height:1px;background:var(--border);margin:2px 0}
+/* PILLS */
+.pills{display:flex;flex-wrap:wrap;gap:5px}
+.pill{padding:5px 11px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--dim);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;font-family:var(--display)}
+.pill:hover{border-color:#444;color:var(--text)}
+.pill.active{background:var(--rappi);border-color:var(--rappi);color:#fff}
+.pill.v-rest.active{background:#888;border-color:#888}
+.pill.v-retail.active{background:var(--green);border-color:var(--green);color:#000}
+.pill.v-travel.active{background:var(--blue);border-color:var(--blue)}
+/* PROMO TABS */
+.ptabs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.ptab{padding:9px 6px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--dim);font-size:11px;font-weight:700;cursor:pointer;text-align:center;font-family:var(--display);text-transform:uppercase;letter-spacing:.03em;transition:all .15s}
+.ptab:hover{border-color:#444;color:var(--text)}
+.ptab.active{background:var(--surface);border-color:var(--rappi);color:var(--rappi)}
+.pfields{display:none;flex-direction:column;gap:10px}
+.pfields.on{display:flex}
+/* AGGR */
+.aggr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.acard{padding:10px 8px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;transition:all .15s;text-align:center}
+.acard:hover{border-color:#444}
+.acard.active{border-color:var(--yellow);background:rgba(255,214,0,.06)}
+.aicon{font-size:18px;margin-bottom:3px}
+.aname{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--dim)}
+.acard.active .aname{color:var(--yellow)}
+.adesc{font-size:9px;color:var(--muted);margin-top:1px;font-family:var(--mono);line-height:1.3}
+/* GEN BTN */
+.genbtn{width:100%;padding:14px;background:var(--rappi);border:none;border-radius:var(--r);color:#fff;font-family:var(--display);font-size:14px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:9px;position:relative;overflow:hidden}
+.genbtn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1) 0%,transparent 60%);pointer-events:none}
+.genbtn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,68,31,.35)}
+.genbtn:active{transform:translateY(0)}
+.genbtn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* OUTPUT */
+.out-empty{padding:50px 18px;text-align:center;color:var(--muted)}
+.out-empty .ei{font-size:36px;margin-bottom:10px;opacity:.3}
+.out-empty p{font-size:12px;line-height:1.7}
+.pv{padding:14px 18px;border-bottom:1px solid var(--border)}
+.pv:last-of-type{border-bottom:none}
+.pvh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.vbadge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:2px 7px;border-radius:4px;font-family:var(--mono)}
+.b-urg{background:rgba(255,68,31,.15);color:var(--rappi)}
+.b-mid{background:rgba(255,214,0,.1);color:var(--yellow)}
+.b-hvu{background:rgba(0,208,132,.1);color:var(--green)}
+.cpbtn{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:3px 9px;color:var(--dim);font-size:10px;font-weight:600;cursor:pointer;font-family:var(--mono);transition:all .15s}
+.cpbtn:hover{border-color:#444;color:var(--text)}
+.cpbtn.ok{border-color:var(--green);color:var(--green)}
+.pf{margin-bottom:8px}
+.pflbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:3px;font-family:var(--mono);display:flex;align-items:center;gap:7px}
+.cc{font-size:9px;font-family:var(--mono);padding:1px 5px;border-radius:3px}
+.cc-ok{background:rgba(0,208,132,.1);color:var(--green)}
+.cc-warn{background:rgba(255,214,0,.1);color:var(--yellow)}
+.cc-over{background:rgba(255,68,31,.15);color:var(--rappi)}
+.ptxt{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:9px 11px;font-size:13px;line-height:1.5;color:var(--text)}
+/* LOADING */
+.ldg{padding:36px 18px;text-align:center}
+.dots{display:flex;justify-content:center;gap:5px;margin-bottom:14px}
+.dot{width:7px;height:7px;background:var(--rappi);border-radius:50%;animation:pulse 1.2s ease-in-out infinite}
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes pulse{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+.ldg p{font-size:11px;color:var(--muted);font-family:var(--mono)}
+/* ERROR */
+.errmsg{background:rgba(255,68,31,.1);border:1px solid rgba(255,68,31,.2);border-radius:8px;padding:11px 14px;font-size:12px;color:#ff6b50;font-family:var(--mono);line-height:1.5}
+/* WEEK MODE */
+.week-config .pb{gap:16px}
+.day-accordion{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:6px}
+.day-header{padding:11px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:var(--surface2);transition:background .15s}
+.day-header:hover{background:#252525}
+.day-name{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.day-badge{font-size:10px;font-family:var(--mono);color:var(--muted)}
+.day-toggle{font-size:16px;color:var(--muted);transition:transform .2s}
+.day-body{display:none;padding:14px;border-top:1px solid var(--border);flex-direction:column;gap:12px;background:var(--surface)}
+.day-body.open{display:flex}
+.day-verticals{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+/* WEEK OUTPUT */
+.week-results{display:flex;flex-direction:column;gap:14px}
+.day-result{border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.dr-header{padding:10px 16px;background:var(--surface2);display:flex;align-items:center;justify-content:space-between}
+.dr-day{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.dr-count{font-size:10px;color:var(--muted);font-family:var(--mono)}
+.push-row{padding:12px 16px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:90px 1fr;gap:12px;align-items:start}
+.push-row:last-child{border-bottom:none}
+.pr-meta{display:flex;flex-direction:column;gap:4px}
+.pr-time{font-size:10px;font-weight:700;color:var(--muted);font-family:var(--mono);text-transform:uppercase}
+.pr-vert{font-size:9px;padding:2px 6px;border-radius:3px;font-family:var(--mono);font-weight:700;width:fit-content}
+.vt{background:rgba(255,107,53,.15);color:var(--turbo)}
+.vr{background:rgba(136,136,136,.15);color:#aaa}
+.vre{background:rgba(0,208,132,.15);color:var(--green)}
+.vtr{background:rgba(77,159,255,.15);color:var(--blue)}
+.pr-content{display:flex;flex-direction:column;gap:6px}
+.pr-title{font-size:13px;font-weight:700}
+.pr-body{font-size:12px;color:var(--dim);line-height:1.4}
+.pr-chars{display:flex;gap:6px;margin-top:2px}
+/* EXCEL BTN */
+.xlsbtn{width:100%;padding:12px;background:var(--green);border:none;border-radius:var(--r);color:#000;font-family:var(--display);font-size:13px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.xlsbtn:hover{opacity:.88}.xlsbtn:disabled{opacity:.4;cursor:not-allowed}
+/* STICKY OUTPUT PANEL */
+#out-week{position:sticky;top:100px}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">R</div>
+  <div>
+    <h1>Push Generator</h1>
+    <small>Turbo · HVU Brief v3</small>
+  </div>
+  <div class="hright" id="key-status" style="display:none">
+    <span class="klabel"><span class="kdot"></span> API conectada</span>
+    <button class="chkey" onclick="resetKey()">cambiar key</button>
+  </div>
+</header>
+
+<!-- API SETUP -->
+<div id="api-setup" style="max-width:460px;margin:80px auto;padding:0 24px;text-align:center">
+  <h2>Push Generator</h2>
+  <p>Ingresa tu API key de Anthropic para comenzar.<br>Se guarda solo en tu navegador.</p>
+  <div class="api-row">
+    <input class="api-inp" type="text" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false">
+    <button class="btn" onclick="saveKey()">Conectar</button>
+  </div>
+  <p class="api-note">console.anthropic.com → API Keys → Create Key · Costo por generación &lt; $0.01 USD</p>
+</div>
+
+<!-- MODE TABS -->
+<div id="mode-bar" style="display:none">
+  <div class="mode-tabs">
+    <button class="mtab active" onclick="setMode('single',this)">Push individual</button>
+    <button class="mtab" onclick="setMode('week',this)">Calendario semanal</button>
+  </div>
+</div>
+
+<!-- ═══ MODE SINGLE ═══ -->
+<div id="mode-single">
+  <div class="panel">
+    <div class="ph"><h2>Brief del push</h2></div>
+    <div class="pb">
+      <!-- VERTICAL -->
+      <div>
+        <label class="lbl">Vertical</label>
+        <div class="pills" id="s-vert">
+          <button class="pill active" data-v="Turbo" onclick="sp(this,'s-vert')">⚡ Turbo</button>
+          <button class="pill v-rest" data-v="Restaurantes" onclick="sp(this,'s-vert')">🍽 Restaurantes</button>
+          <button class="pill v-retail" data-v="Retail" onclick="sp(this,'s-vert')">🛒 Retail</button>
+          <button class="pill v-travel" data-v="Travel" onclick="sp(this,'s-vert')">✈️ Travel</button>
+        </div>
+      </div>
+      <!-- PROMO TYPE -->
+      <div>
+        <label class="lbl">Tipo de promoción</label>
+        <div class="ptabs">
+          <button class="ptab active" data-t="desc" onclick="setPromo(this,'s')">% OFF</button>
+          <button class="ptab" data-t="cb" onclick="setPromo(this,'s')">Cashback</button>
+          <button class="ptab" data-t="rc" onclick="setPromo(this,'s')">Rappicreditos</button>
+        </div>
+      </div>
+      <div class="pfields on" id="s-fields-desc">
+        <div class="frow">
+          <div><label class="lbl">% de descuento</label><input type="number" id="s-dp" placeholder="ej. 40" min="1" max="100"></div>
+          <div><label class="lbl">Aliado / marca</label><input type="text" id="s-da" placeholder="ej. Modelo, Pepsico"></div>
+        </div>
+        <div><label class="lbl">Producto / categoría</label><input type="text" id="s-dd" placeholder="ej. cervezas y botanas, toda la tienda"></div>
+      </div>
+      <div class="pfields" id="s-fields-cb">
+        <div class="frow">
+          <div><label class="lbl">% devolución</label><input type="number" id="s-cp" placeholder="ej. 50"></div>
+          <div><label class="lbl">Aliado</label><input type="text" id="s-ca" placeholder="ej. Costco"></div>
+        </div>
+        <div class="frow">
+          <div><label class="lbl">Mínimo de compra</label><input type="text" id="s-cm" placeholder="ej. $400"></div>
+          <div><label class="lbl">Máximo de devolución</label><input type="text" id="s-cx" placeholder="ej. $200"></div>
+        </div>
+      </div>
+      <div class="pfields" id="s-fields-rc">
+        <div class="frow">
+          <div><label class="lbl">Créditos a ganar</label><input type="text" id="s-rq" placeholder="ej. $150"></div>
+          <div><label class="lbl">Mínimo de compra</label><input type="text" id="s-rm" placeholder="ej. $300"></div>
+        </div>
+        <div><label class="lbl">Aliado donde aplica</label><input type="text" id="s-ra" placeholder="ej. toda la app, solo Turbo"></div>
+      </div>
+      <div class="hr"></div>
+      <!-- MOMENTO -->
+      <div>
+        <label class="lbl">Momento del día</label>
+        <div class="pills" id="s-mom">
+          <button class="pill" data-v="Mañana (08-11h)" onclick="sp(this,'s-mom')">☀️ Mañana</button>
+          <button class="pill active" data-v="Medio día (11-14h)" onclick="sp(this,'s-mom')">🌤 Medio día</button>
+          <button class="pill" data-v="Tarde (15-18h)" onclick="sp(this,'s-mom')">🌇 Tarde</button>
+          <button class="pill" data-v="Cena (18-20h)" onclick="sp(this,'s-mom')">🌙 Cena</button>
+        </div>
+      </div>
+      <!-- SEASONAL -->
+      <div>
+        <label class="lbl">Seasonal / temática</label>
+        <select id="s-seas" onchange="updCustom('s-seas','s-seas-c')">
+          <option value="">Sin seasonal — push evergreen</option>
+          <optgroup label="Deportes">
+            <option>Mundial FIFA 2026</option><option>Olimpiadas</option><option>Super Bowl</option><option>Champions League Final</option>
+          </optgroup>
+          <optgroup label="Fechas México">
+            <option>Día de Reyes (6 enero)</option><option>San Valentín (14 febrero)</option><option>Día de la Candelaria</option><option>Semana Santa</option><option>Día del Niño (30 abril)</option><option>Día de las Madres (10 mayo)</option><option>Día del Padre</option><option>Independencia (15-16 sep)</option><option>Halloween (31 oct)</option><option>Día de Muertos (1-2 nov)</option><option>Buen Fin</option><option>Navidad</option><option>Año Nuevo</option>
+          </optgroup>
+          <optgroup label="Momentos de consumo">
+            <option>Quincena (1 y 15 de mes)</option><option>Fin de semana</option><option>Lunes de regreso</option><option>Viernes de salida</option>
+          </optgroup>
+          <option value="otro">Otro (especificar)…</option>
+        </select>
+        <input type="text" id="s-seas-c" placeholder="Describe la temática" style="display:none;margin-top:7px">
+      </div>
+      <!-- AGRESIVIDAD -->
+      <div>
+        <label class="lbl">Agresividad</label>
+        <div class="aggr-grid">
+          <div class="acard" data-v="BAU" onclick="selAggr(this,'s-aggr')">
+            <div class="aicon">📦</div><div class="aname">BAU</div><div class="adesc">Siempre encendido, larga duración</div>
+          </div>
+          <div class="acard active" data-v="Viral Deal" onclick="selAggr(this,'s-aggr')">
+            <div class="aicon">🔥</div><div class="aname">Viral Deal</div><div class="adesc">Descuento agresivo, hasta agotar</div>
+          </div>
+          <div class="acard" data-v="Hora Loca Turbo" onclick="selAggr(this,'s-aggr')">
+            <div class="aicon">⚡</div><div class="aname">Hora Loca</div><div class="adesc">Muy agresivo, solo por horas</div>
+          </div>
+        </div>
+      </div>
+      <!-- OBS -->
+      <div>
+        <label class="lbl">Observaciones / restricciones</label>
+        <textarea id="s-obs" placeholder="Ej: mencionar que dura 3 horas, anclar al partido de hoy…"></textarea>
+      </div>
+      <button class="genbtn" id="s-genbtn" onclick="genSingle()">
+        <span class="spin" id="s-spin"></span>
+        <span id="s-btntxt">Generar 3 versiones</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- SINGLE OUTPUT -->
+  <div class="panel" style="position:sticky;top:88px">
+    <div class="ph"><h2>Output</h2></div>
+    <div id="s-out">
+      <div class="out-empty">
+        <div class="ei">📲</div>
+        <p>Llena el brief y genera.<br>Aparecerán 3 versiones listas<br>para copiar.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODE WEEK ═══ -->
+<div id="mode-week">
+  <!-- WEEK LEFT CONFIG -->
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <!-- GLOBAL CONFIG -->
+    <div class="panel week-config">
+      <div class="ph"><h2>Configuración semanal</h2></div>
+      <div class="pb">
+        <div>
+          <label class="lbl">Semana del</label>
+          <input type="text" id="w-range" placeholder="ej. 9–15 junio 2026">
+        </div>
+        <div>
+          <label class="lbl">Seasonal activo</label>
+          <select id="w-seas" onchange="updCustom('w-seas','w-seas-c')">
+            <option value="">Sin seasonal</option>
+            <optgroup label="Deportes">
+              <option>Mundial FIFA 2026</option><option>Olimpiadas</option><option>Super Bowl</option><option>Champions League Final</option>
+            </optgroup>
+            <optgroup label="Fechas México">
+              <option>Día de Reyes (6 enero)</option><option>San Valentín (14 febrero)</option><option>Día de la Candelaria</option><option>Semana Santa</option><option>Día del Niño (30 abril)</option><option>Día de las Madres (10 mayo)</option><option>Día del Padre</option><option>Independencia (15-16 sep)</option><option>Halloween (31 oct)</option><option>Día de Muertos (1-2 nov)</option><option>Buen Fin</option><option>Navidad</option><option>Año Nuevo</option>
+            </optgroup>
+            <optgroup label="Momentos"><option>Quincena</option><option>Fin de semana</option></optgroup>
+            <option value="otro">Otro…</option>
+          </select>
+          <input type="text" id="w-seas-c" placeholder="Describe la temática" style="display:none;margin-top:7px">
+        </div>
+        <div>
+          <label class="lbl">Capabilities a educar esta semana</label>
+          <textarea id="w-caps" placeholder="ej. Sports Gear en Turbo, aguacate del día con garantía, OXXO en Rappi…" style="min-height:60px"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAYS -->
+    <div class="panel">
+      <div class="ph"><h2>Días y promos</h2></div>
+      <div class="pb" id="days-container"></div>
+    </div>
+
+    <button class="genbtn" id="w-genbtn" onclick="genWeek()">
+      <span class="spin" id="w-spin"></span>
+      <span id="w-btntxt">Generar calendario (21 pushes)</span>
+    </button>
+  </div>
+
+  <!-- WEEK OUTPUT -->
+  <div id="out-week">
+    <div class="panel">
+      <div class="ph">
+        <h2>Calendario generado</h2>
+        <button class="btn btn-green btn-sm" id="xlsbtn" onclick="exportXLS()" style="display:none">⬇ Descargar Excel</button>
+      </div>
+      <div id="w-out">
+        <div class="out-empty">
+          <div class="ei">📅</div>
+          <p>Configura la semana y genera.<br>Aparecerá el calendario completo<br>listo para exportar.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+// ─── CONSTANTS ────────────────────────────────────────────
+const DAYS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+const MOMENTOS = ['Mañana (08-11h)','Medio día (11-14h)','Tarde (15-18h)','Cena (18-20h)'];
+const MOMENT_SHORT = {'Mañana (08-11h)':'Mañana','Medio día (11-14h)':'Medio día','Tarde (15-18h)':'Tarde','Cena (18-20h)':'Cena'};
+
+// Optimal moment matrix: product keyword → best moments
+const MOMENT_MATRIX = {
+  'cerveza':['Tarde (15-18h)','Cena (18-20h)'],
+  'beer':['Tarde (15-18h)','Cena (18-20h)'],
+  'bebida alc':['Tarde (15-18h)','Cena (18-20h)'],
+  'vino':['Tarde (15-18h)','Cena (18-20h)'],
+  'botana':['Tarde (15-18h)','Cena (18-20h)'],
+  'snack':['Tarde (15-18h)','Cena (18-20h)'],
+  'café':['Mañana (08-11h)','Medio día (11-14h)','Tarde (15-18h)'],
+  'coffee':['Mañana (08-11h)','Medio día (11-14h)','Tarde (15-18h)'],
+  'desayuno':['Mañana (08-11h)'],
+  'pan':['Mañana (08-11h)'],
+  'açaí':['Mañana (08-11h)'],
+  'fruta':['Mañana (08-11h)','Medio día (11-14h)'],
+  'verdura':['Mañana (08-11h)','Medio día (11-14h)'],
+  'súper':['Mañana (08-11h)','Medio día (11-14h)'],
+  'super':['Mañana (08-11h)','Medio día (11-14h)'],
+  'farmacia':['Mañana (08-11h)','Medio día (11-14h)','Tarde (15-18h)'],
+  'postre':['Tarde (15-18h)','Cena (18-20h)'],
+  'pizza':['Cena (18-20h)'],
+  'taco':['Medio día (11-14h)','Cena (18-20h)'],
+  'sushi':['Medio día (11-14h)','Cena (18-20h)'],
+  'pasta':['Medio día (11-14h)','Cena (18-20h)'],
+  'bowl':['Medio día (11-14h)'],
+  'comida':['Medio día (11-14h)'],
+  'restaurante':['Medio día (11-14h)','Cena (18-20h)'],
+  'cashback':['Mañana (08-11h)','Medio día (11-14h)'],
+  'costco':['Mañana (08-11h)','Medio día (11-14h)'],
+  'default':['Mañana (08-11h)','Medio día (11-14h)','Tarde (15-18h)']
+};
+
+// Weekend overrides
+const WEEKEND_OVERRIDE = {
+  'cerveza':['Tarde (15-18h)','Cena (18-20h)'],
+  'botana':['Tarde (15-18h)','Cena (18-20h)'],
+  'pizza':['Cena (18-20h)'],
+  'desayuno':['Mañana (08-11h)','Medio día (11-14h)'],
+  'brunch':['Mañana (08-11h)','Medio día (11-14h)']
+};
+
+const BRIEF = `Eres un experto en copy para push notifications de Rappi México, especializado en la vertical Turbo y en el perfil HVU (High Value User).
+
+REGLAS ABSOLUTAS:
+- Tono conversacional: como contarle una noticia a un amigo. Casual, directo, valioso.
+- Spanglish natural: máximo 1-2 palabras en inglés por copy (cool, top, trendy, plan, MUST, deal, weekend, finde, brunch, healthy, fresh, vibe, ready, deli). Sin comillas ni itálicas.
+- PROHIBIDO: "increíble", "experiencia única", "no te pierdas", "disfruta", "aprovecha esta increíble", "exclusivo".
+- Sin emojis salvo que el usuario los pida.
+- Sin Oxford comma en español.
+- Etiquetas siempre: "Título:" y "Body:" (nunca "Cuerpo:").
+- Un push = un mensaje. No mezclar value props.
+- No usar marcas/aliados salvo los indicados explícitamente.
+
+REGLAS TURBO:
+- Siempre incluir "en 10 min" en body o título.
+- Value props: "bodegas propias", "sin sustitutos: si pides 7 te llegan 7", "inventario actualizado".
+
+TURBO RESTAURANTES:
+- Siempre incluir "en 15 min".
+- Value props: "llega caliente", "sin filas", "sin hielo derretido".
+
+═══ LÍMITES DE CARACTERES — REGLA CRÍTICA ═══
+Los caracteres se cuentan INCLUYENDO ESPACIOS. Esto es innegociable: el texto se mostrará en pantallas de celular y si supera el límite se corta visualmente.
+
+TÍTULO: MÁXIMO 35 caracteres (espacios incluidos). NUNCA superar este número.
+BODY: MÁXIMO 120 caracteres (espacios incluidos). NUNCA superar este número.
+
+CALIBRACIÓN — ejemplos reales contados carácter por carácter:
+"Turbo tiene promo mundialista" = 29 caracteres ✓
+"50% de cashback, en 10 min" = 26 caracteres ✓
+"Hora Loca Turbo: chelas y botanas" = 33 caracteres ✓
+"40% OFF en chelas y botanas hoy" = 31 caracteres ✓
+"Turbo: chelas y botanas al 40%" = 30 caracteres ✓
+
+ANTES de escribir un título, cuenta mentalmente los caracteres. Si tienes dudas entre dos opciones, elige la más corta.
+Si un título que quieres usar tiene 36+ caracteres, elimina una palabra, no la reemplaces por otra.
+
+PATRONES DE TÍTULO (todos caben en ≤35 caracteres):
+- Pregunta directa: "¿Te falta aguacate para hoy?" (28)
+- Producto + precio: "Starbucks helado a $59" (21)
+- Statement: "Cancino is always a good idea" (29)
+- Urgencia: "3 horas, 50% en Modelo" (22)
+- Momento: "Bowl ideal para el martes" (24)
+
+BODY — máximo 120 caracteres con espacios. Estructura recomendada:
+[Beneficio concreto]. [Condición si aplica]. [Value prop Turbo: "en 10 min" o "en 15 min"].
+
+CONECTORES DE BODY: "Y es de [marca]…", "Y justo ahorita está a $X", "Acuérdate que en Rappi…", "¡Por fin!", "Literal", "Por algo es…"`;
+
+
+// ─── STATE ────────────────────────────────────────────────
+let sessionHistory = [];
+let weekData = null;
+
+// ─── API KEY ──────────────────────────────────────────────
+function saveKey(){
+  const k=document.getElementById('api-key-input').value.trim();
+  if(!k.startsWith('sk-ant')){alert('La key debe empezar con sk-ant');return}
+  localStorage.setItem('rappi_pg_key',k);showApp();
+}
+function resetKey(){
+  localStorage.removeItem('rappi_pg_key');
+  document.getElementById('mode-bar').style.display='none';
+  document.getElementById('mode-single').classList.remove('active');
+  document.getElementById('mode-week').classList.remove('active');
+  document.getElementById('api-setup').style.display='block';
+  document.getElementById('key-status').style.display='none';
+}
+function showApp(){
+  document.getElementById('api-setup').style.display='none';
+  document.getElementById('mode-bar').style.display='block';
+  document.getElementById('mode-single').classList.add('active');
+  document.getElementById('key-status').style.display='flex';
+  buildDays();
+}
+
+// ─── MODE SWITCH ──────────────────────────────────────────
+function setMode(m,el){
+  document.querySelectorAll('.mtab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('mode-single').classList.remove('active');
+  document.getElementById('mode-week').classList.remove('active');
+  document.getElementById('mode-'+m).classList.add('active');
+}
+
+// ─── PILL / SELECTOR HELPERS ──────────────────────────────
+function sp(el,grp){
+  document.getElementById(grp).querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+}
+function setPromo(el,pfx){
+  el.closest('.pb').querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const t=el.dataset.t;
+  ['desc','cb','rc'].forEach(x=>{
+    const f=document.getElementById(pfx+'-fields-'+x);
+    if(f)f.classList.toggle('on',x===t);
+  });
+}
+function selAggr(el,grp){
+  el.closest('.aggr-grid').querySelectorAll('.acard').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+function updCustom(selId,inpId){
+  const s=document.getElementById(selId);
+  const i=document.getElementById(inpId);
+  i.style.display=s.value==='otro'?'block':'none';
+}
+function getSeasonal(selId,inpId){
+  const v=document.getElementById(selId).value;
+  return v==='otro'?document.getElementById(inpId).value:v;
+}
+
+// ─── BUILD DAY ACCORDIONS ─────────────────────────────────
+function buildDays(){
+  const c=document.getElementById('days-container');
+  c.innerHTML='';
+  DAYS.forEach((d,i)=>{
+    const isWeekend=i>=5;
+    c.innerHTML+=`
+    <div class="day-accordion" id="day-acc-${i}">
+      <div class="day-header" onclick="toggleDay(${i})">
+        <span class="day-name">${d}</span>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="day-badge" id="day-badge-${i}">sin promos</span>
+          <span class="day-toggle" id="day-tog-${i}">▾</span>
+        </div>
+      </div>
+      <div class="day-body" id="day-body-${i}">
+        <div>
+          <label class="lbl">Verticales activas este día</label>
+          <div class="day-verticals" id="dv-${i}">
+            <button class="pill active v-turbo" data-v="Turbo" onclick="toggleDayVert(this,${i})">⚡ Turbo</button>
+            <button class="pill v-rest" data-v="Restaurantes" onclick="toggleDayVert(this,${i})">🍽 Restaurantes</button>
+            <button class="pill v-retail" data-v="Retail" onclick="toggleDayVert(this,${i})">🛒 Retail</button>
+            <button class="pill v-travel" data-v="Travel" onclick="toggleDayVert(this,${i})">✈️ Travel</button>
+          </div>
+        </div>
+        <div>
+          <label class="lbl">Promos del día</label>
+          <textarea id="d-promos-${i}" placeholder="ej. 50% cashback Turbo Restaurantes máx $200 · 40% OFF cervezas Modelo · cashback Costco 50% máx $150" style="min-height:68px" oninput="updateDayBadge(${i})"></textarea>
+        </div>
+        <div>
+          <label class="lbl">Marcas / restaurantes a destacar</label>
+          <input type="text" id="d-brands-${i}" placeholder="ej. Cancino, Maison Kayser, Bobo">
+        </div>
+        <div>
+          <label class="lbl">Agresividad del día</label>
+          <div class="aggr-grid">
+            <div class="acard${isWeekend?'':' active'}" data-v="BAU" onclick="selAggr(this,'d-aggr-${i}')">
+              <div class="aicon">📦</div><div class="aname">BAU</div>
+            </div>
+            <div class="acard${isWeekend?' active':''}" data-v="Viral Deal" onclick="selAggr(this,'d-aggr-${i}')">
+              <div class="aicon">🔥</div><div class="aname">Viral Deal</div>
+            </div>
+            <div class="acard" data-v="Hora Loca Turbo" onclick="selAggr(this,'d-aggr-${i}')">
+              <div class="aicon">⚡</div><div class="aname">Hora Loca</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="lbl">Observaciones del día</label>
+          <input type="text" id="d-obs-${i}" placeholder="Restricciones o contexto específico de este día">
+        </div>
+      </div>
+    </div>`;
+  });
+}
+
+function toggleDay(i){
+  const b=document.getElementById('day-body-'+i);
+  const t=document.getElementById('day-tog-'+i);
+  b.classList.toggle('open');
+  t.textContent=b.classList.contains('open')?'▴':'▾';
+}
+
+function toggleDayVert(el,i){el.classList.toggle('active')}
+
+function updateDayBadge(i){
+  const v=document.getElementById('d-promos-'+i).value.trim();
+  document.getElementById('day-badge-'+i).textContent=v?v.substring(0,30)+'…':'sin promos';
+}
+
+// ─── GET DAY STATE ────────────────────────────────────────
+function getDayState(i){
+  const verts=[...document.getElementById('dv-'+i).querySelectorAll('.pill.active')].map(p=>p.dataset.v);
+  const aggr=(document.getElementById('day-acc-'+i).querySelector('.acard.active')||{dataset:{v:'BAU'}}).dataset.v;
+  return{
+    day:DAYS[i],
+    verticals:verts,
+    promos:document.getElementById('d-promos-'+i).value.trim(),
+    brands:document.getElementById('d-brands-'+i).value.trim(),
+    agresividad:aggr,
+    obs:document.getElementById('d-obs-'+i).value.trim(),
+    isWeekend:i>=5
+  };
+}
+
+// ─── OPTIMAL MOMENTS ──────────────────────────────────────
+function getOptimalMoments(promos, isWeekend){
+  const txt=(promos||'').toLowerCase();
+  const matrix=isWeekend?{...MOMENT_MATRIX,...WEEKEND_OVERRIDE}:MOMENT_MATRIX;
+  let found=new Set();
+  for(const[kw,moms] of Object.entries(matrix)){
+    if(kw==='default')continue;
+    if(txt.includes(kw))moms.forEach(m=>found.add(m));
+  }
+  if(found.size===0)MOMENT_MATRIX['default'].forEach(m=>found.add(m));
+  // Return top 3
+  return MOMENTOS.filter(m=>found.has(m)).slice(0,3);
+}
+
+// ─── BUILD SINGLE PROMPT ──────────────────────────────────
+function buildSinglePrompt(){
+  const vert=document.getElementById('s-vert').querySelector('.pill.active')?.dataset.v||'Turbo';
+  const mom=document.getElementById('s-mom').querySelector('.pill.active')?.dataset.v||'Medio día';
+  const aggr=document.querySelector('#mode-single .acard.active')?.dataset.v||'Viral Deal';
+  const seas=getSeasonal('s-seas','s-seas-c');
+  const obs=document.getElementById('s-obs').value;
+  const activeTab=document.querySelector('#mode-single .ptab.active')?.dataset.t||'desc';
+
+  let promo='';
+  if(activeTab==='desc'){
+    promo=`Tipo: ${document.getElementById('s-dp').value||''}% OFF\nProducto/categoría: ${document.getElementById('s-dd').value||''}\nAliado (única marca permitida): ${document.getElementById('s-da').value||''}`;
+  }else if(activeTab==='cb'){
+    promo=`Tipo: Cashback ${document.getElementById('s-cp').value||''}%\nAliado: ${document.getElementById('s-ca').value||''}\nMínimo: ${document.getElementById('s-cm').value||''} | Máximo: ${document.getElementById('s-cx').value||''}`;
+  }else{
+    promo=`Tipo: Rappicreditos ${document.getElementById('s-rq').value||''}\nMínimo: ${document.getElementById('s-rm').value||''}\nAliado: ${document.getElementById('s-ra').value||''}`;
+  }
+
+  const hist=sessionHistory.slice(-3).map((h,i)=>`Push ${i+1}: Título: "${h.titulo}" | Body: "${h.body}"`).join('\n');
+
+  return `Genera 3 versiones de push notification.
+
+VERTICAL: ${vert}
+MOMENTO: ${mom}
+SEASONAL: ${seas||'Ninguno'}
+AGRESIVIDAD: ${aggr}
+
+PROMOCIÓN:
+${promo}
+${obs?`\nOBSERVACIONES: ${obs}`:''}
+${hist?`\nHISTORIAL RECIENTE (NO repetir conectores ni estructura de estos):\n${hist}`:''}
+
+VERSIONES REQUERIDAS:
+- V1 URGENTE: máxima presión, acción inmediata, escasez/tiempo.
+- V2 INTERMEDIA: balance beneficio + urgencia moderada.
+- V3 HVU: tono aspiracional, chill, opinionado. El HVU ya sabe el valor de Rappi.
+
+FORMATO EXACTO (sin texto adicional):
+===V1===
+Título: [texto]
+Body: [texto]
+
+===V2===
+Título: [texto]
+Body: [texto]
+
+===V3===
+Título: [texto]
+Body: [texto]`;
+}
+
+// ─── BUILD WEEK PROMPT ────────────────────────────────────
+function buildWeekPrompt(dayStates, globalSeasonal, caps){
+  const blocks=dayStates.map(d=>{
+    const moms=getOptimalMoments(d.promos,d.isWeekend);
+    return `DÍA: ${d.day}${d.isWeekend?' (FIN DE SEMANA)':''}
+Verticales activas: ${d.verticals.join(', ')||'Turbo'}
+Momentos asignados automáticamente: ${moms.map(m=>MOMENT_SHORT[m]).join(', ')}
+Promos: ${d.promos||'Sin promos específicas — usar capability educativa'}
+Marcas/restaurantes: ${d.brands||'ninguna específica'}
+Agresividad: ${d.agresividad}
+${d.obs?`Obs: ${d.obs}`:''}`;
+  }).join('\n\n');
+
+  return `Genera el calendario semanal de push notifications para Rappi.
+
+SEASONAL GLOBAL: ${globalSeasonal||'Ninguno'}
+CAPABILITIES A EDUCAR: ${caps||'Ninguna específica'}
+
+${blocks}
+
+REGLAS DE DISTRIBUCIÓN:
+- 3 pushes por día, en los momentos indicados.
+- Distribuir verticales según lo indicado por día.
+- Ajustar producto al momento de consumo (cervezas → tarde/cena, desayuno → mañana, etc).
+- No repetir el mismo conector o estructura dos veces en la semana.
+- Fin de semana: tono más relajado, anchors de plan y momento.
+- Si hay capability educativa global, incluir al menos 2 pushes de ese tipo en la semana.
+
+FORMATO EXACTO (sin texto adicional, sin explicaciones):
+===DÍA: [nombre]===
+PUSH 1 | [Momento] | [Vertical]
+Título: [texto]
+Body: [texto]
+
+PUSH 2 | [Momento] | [Vertical]
+Título: [texto]
+Body: [texto]
+
+PUSH 3 | [Momento] | [Vertical]
+Título: [texto]
+Body: [texto]
+
+(repetir para los 7 días)`;
+}
+
+// ─── PARSE SINGLE ─────────────────────────────────────────
+function parseSingle(txt){
+  const versions=[];
+  const labels=['URGENTE','INTERMEDIA','HVU'];
+  const parts=txt.split(/===V\d===\n?/);
+  parts.shift();
+  parts.forEach((p,i)=>{
+    const tm=p.match(/Título:\s*(.+)/);
+    const bm=p.match(/Body:\s*(.+)/);
+    if(tm&&bm)versions.push({label:labels[i]||`V${i+1}`,titulo:tm[1].trim(),body:bm[1].trim()});
+  });
+  if(!versions.length){
+    const all=[...txt.matchAll(/Título:\s*(.+)\nBody:\s*(.+)/g)];
+    all.forEach((m,i)=>versions.push({label:labels[i]||`V${i+1}`,titulo:m[1].trim(),body:m[2].trim()}));
+  }
+  return versions;
+}
+
+// ─── PARSE WEEK ───────────────────────────────────────────
+function parseWeek(txt){
+  const result=[];
+  const dayBlocks=txt.split(/===DÍA:\s*([^=]+)===\n?/);
+  let i=1;
+  while(i<dayBlocks.length){
+    const dayName=dayBlocks[i].trim();
+    const content=dayBlocks[i+1]||'';
+    const pushes=[];
+    const pushBlocks=content.split(/PUSH \d+\s*\|/);
+    pushBlocks.shift();
+    pushBlocks.forEach(pb=>{
+      const meta=pb.split('\n')[0]||'';
+      const momMatch=meta.match(/([^\|]+)\|/);
+      const vertMatch=meta.match(/\|(.+)/);
+      const tm=pb.match(/Título:\s*(.+)/);
+      const bm=pb.match(/Body:\s*(.+)/);
+      if(tm&&bm){
+        pushes.push({
+          momento:(momMatch?momMatch[1]:meta.split('|')[0]||'').trim(),
+          vertical:(vertMatch?vertMatch[1]:meta.split('|')[1]||'Turbo').trim(),
+          titulo:tm[1].trim(),
+          body:bm[1].trim()
+        });
+      }
+    });
+    if(pushes.length)result.push({day:dayName,pushes});
+    i+=2;
+  }
+  return result;
+}
+
+// ─── RENDER SINGLE ────────────────────────────────────────
+function ccClass(n,lim){return n<=lim*.85?'cc-ok':n<=lim?'cc-warn':'cc-over'}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function renderSingle(versions){
+  const bc=['b-urg','b-mid','b-hvu'];
+  const vl=['V1 — Urgente','V2 — Intermedia','V3 — HVU'];
+  let html='';
+  versions.forEach((v,i)=>{
+    const tl=v.titulo.length,bl=v.body.length;
+    const cd=`Título: ${v.titulo}\nBody: ${v.body}`;
+    html+=`<div class="pv">
+      <div class="pvh">
+        <span class="vbadge ${bc[i]}">${vl[i]}</span>
+        <button class="cpbtn" id="cp${i}" onclick="doCopy('cp${i}',\`${cd.replace(/`/g,'\\`')}\`)">Copiar</button>
+      </div>
+      <div class="pf"><div class="pflbl">Título <span class="cc ${ccClass(tl,35)}">${tl}/35</span></div><div class="ptxt">${esc(v.titulo)}</div></div>
+      <div class="pf"><div class="pflbl">Body <span class="cc ${ccClass(bl,120)}">${bl}/120</span></div><div class="ptxt">${esc(v.body)}</div></div>
+    </div>`;
+  });
+  document.getElementById('s-out').innerHTML=html;
+  versions.forEach(v=>sessionHistory.push({titulo:v.titulo,body:v.body}));
+  if(sessionHistory.length>9)sessionHistory=sessionHistory.slice(-9);
+}
+
+// ─── RENDER WEEK ──────────────────────────────────────────
+const VERT_CLASS={Turbo:'vt','Turbo Restaurantes':'vt',Restaurantes:'vr',Retail:'vre',Travel:'vtr'};
+
+function renderWeek(days){
+  weekData=days;
+  let html='';
+  days.forEach(d=>{
+    html+=`<div class="day-result"><div class="dr-header"><span class="dr-day">${esc(d.day)}</span><span class="dr-count">${d.pushes.length} pushes</span></div>`;
+    d.pushes.forEach((p,pi)=>{
+      const tl=p.titulo.length,bl=p.body.length;
+      const vc=VERT_CLASS[p.vertical]||'vt';
+      html+=`<div class="push-row">
+        <div class="pr-meta">
+          <div class="pr-time">${esc(p.momento)}</div>
+          <div class="pr-vert ${vc}">${esc(p.vertical)}</div>
+        </div>
+        <div class="pr-content">
+          <div class="pr-title">${esc(p.titulo)}</div>
+          <div class="pr-body">${esc(p.body)}</div>
+          <div class="pr-chars">
+            <span class="cc ${ccClass(tl,35)}">${tl}/35</span>
+            <span class="cc ${ccClass(bl,120)}">${bl}/120</span>
+          </div>
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  document.getElementById('w-out').innerHTML=html;
+  document.getElementById('xlsbtn').style.display='flex';
+}
+
+// ─── COPY ─────────────────────────────────────────────────
+async function doCopy(id,txt){
+  await navigator.clipboard.writeText(txt);
+  const b=document.getElementById(id);
+  b.textContent='✓ Copiado';b.classList.add('ok');
+  setTimeout(()=>{b.textContent='Copiar';b.classList.remove('ok')},2000);
+}
+
+// ─── API CALL ─────────────────────────────────────────────
+async function callAPI(userMsg, maxTok=1800){
+  const key=localStorage.getItem('rappi_pg_key');
+  const res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:maxTok,system:BRIEF,messages:[{role:'user',content:userMsg}]})
+  });
+  const d=await res.json();
+  if(d.error)throw new Error(d.error.message);
+  return d.content?.[0]?.text||'';
+}
+
+// ─── AUTO TRIM ────────────────────────────────────────────
+// For each version that exceeds limits, ask the model to trim it
+async function autoTrim(versions){
+  const toFix=versions.filter(v=>v.titulo.length>35||v.body.length>120);
+  if(!toFix.length)return versions;
+
+  const fixPrompt=`Los siguientes pushes superan los límites de caracteres (espacios incluidos).
+Título máx 35 caracteres. Body máx 120 caracteres.
+Recórtalos SIN cambiar el tono ni perder el mensaje clave. No agregues palabras, solo elimina.
+
+${toFix.map((v,i)=>`PUSH ${i+1}:
+Título actual (${v.titulo.length} chars): ${v.titulo}
+Body actual (${v.body.length} chars): ${v.body}`).join('\n\n')}
+
+Responde SOLO con el formato:
+PUSH 1:
+Título: [texto recortado]
+Body: [texto recortado]
+
+(repetir por cada push)`;
+
+  const raw=await callAPI(fixPrompt,600);
+  const fixed=[...raw.matchAll(/PUSH \d+:\nTítulo:\s*(.+)\nBody:\s*(.+)/g)];
+
+  let fi=0;
+  return versions.map(v=>{
+    if(v.titulo.length<=35&&v.body.length<=120)return v;
+    const f=fixed[fi++];
+    if(!f)return v;
+    const newTit=f[1].trim();
+    const newBody=f[2].trim();
+    // Only replace if the trimmed version actually fits
+    return{
+      ...v,
+      titulo:newTit.length<=35?newTit:v.titulo.slice(0,35).trimEnd(),
+      body:newBody.length<=120?newBody:v.body.slice(0,120).trimEnd()
+    };
+  });
+}
+
+// ─── AUTO TRIM WEEK ───────────────────────────────────────
+async function autoTrimWeek(days){
+  const violations=[];
+  days.forEach((d,di)=>d.pushes.forEach((p,pi)=>{
+    if(p.titulo.length>35||p.body.length>120)violations.push({di,pi,titulo:p.titulo,body:p.body});
+  }));
+  if(!violations.length)return days;
+
+  const fixPrompt=`Los siguientes pushes superan los límites de caracteres (espacios incluidos).
+Título máx 35 chars. Body máx 120 chars. Recorta SIN cambiar tono ni mensaje clave.
+
+${violations.map((v,i)=>`PUSH ${i+1}:
+Título actual (${v.titulo.length} chars): ${v.titulo}
+Body actual (${v.body.length} chars): ${v.body}`).join('\n\n')}
+
+Responde SOLO con:
+PUSH 1:
+Título: [texto]
+Body: [texto]
+(repetir)`;
+
+  const raw=await callAPI(fixPrompt, Math.min(200*violations.length+200, 1800));
+  const fixed=[...raw.matchAll(/PUSH \d+:\nTítulo:\s*(.+)\nBody:\s*(.+)/g)];
+
+  let fi=0;
+  const result=days.map(d=>({...d,pushes:[...d.pushes]}));
+  violations.forEach(({di,pi})=>{
+    const f=fixed[fi++];
+    if(!f)return;
+    const nt=f[1].trim(),nb=f[2].trim();
+    result[di].pushes[pi]={
+      ...result[di].pushes[pi],
+      titulo:nt.length<=35?nt:result[di].pushes[pi].titulo.slice(0,35).trimEnd(),
+      body:nb.length<=120?nb:result[di].pushes[pi].body.slice(0,120).trimEnd()
+    };
+  });
+  return result;
+}
+
+
+// ─── GEN SINGLE ───────────────────────────────────────────
+async function genSingle(){
+  const btn=document.getElementById('s-genbtn');
+  const spin=document.getElementById('s-spin');
+  const btxt=document.getElementById('s-btntxt');
+  btn.disabled=true;spin.style.display='block';btxt.textContent='Generando…';
+  document.getElementById('s-out').innerHTML='<div class="ldg"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><p>Generando 3 versiones…</p></div>';
+  try{
+    const txt=await callAPI(buildSinglePrompt());
+    let v=parseSingle(txt);
+    if(!v.length){
+      document.getElementById('s-out').innerHTML=`<div style="padding:16px"><div class="errmsg">No se parsearon versiones. Raw:<br><br>${esc(txt.slice(0,400))}</div></div>`;
+    }else{
+      const hasViolations=v.some(x=>x.titulo.length>35||x.body.length>120);
+      if(hasViolations){
+        btxt.textContent='Ajustando longitud…';
+        v=await autoTrim(v);
+      }
+      renderSingle(v);
+    }
+  }catch(e){
+    document.getElementById('s-out').innerHTML=`<div style="padding:16px"><div class="errmsg">Error: ${esc(e.message)}</div></div>`;
+  }finally{
+    btn.disabled=false;spin.style.display='none';btxt.textContent='Generar 3 versiones';
+  }
+}
+
+// ─── GEN WEEK ─────────────────────────────────────────────
+async function genWeek(){
+  const btn=document.getElementById('w-genbtn');
+  const spin=document.getElementById('w-spin');
+  const btxt=document.getElementById('w-btntxt');
+  btn.disabled=true;spin.style.display='block';btxt.textContent='Generando calendario…';
+  document.getElementById('w-out').innerHTML='<div class="ldg"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><p>Generando 21 pushes… puede tomar ~20 segundos</p></div>';
+  document.getElementById('xlsbtn').style.display='none';
+  try{
+    const dayStates=DAYS.map((_,i)=>getDayState(i));
+    const seas=getSeasonal('w-seas','w-seas-c');
+    const caps=document.getElementById('w-caps').value;
+    const txt=await callAPI(buildWeekPrompt(dayStates,seas,caps));
+    let days=parseWeek(txt);
+    if(!days.length){
+      document.getElementById('w-out').innerHTML=`<div style="padding:16px"><div class="errmsg">No se parseó el calendario. Raw:<br><br>${esc(txt.slice(0,600))}</div></div>`;
+    }else{
+      const hasViolations=days.some(d=>d.pushes.some(p=>p.titulo.length>35||p.body.length>120));
+      if(hasViolations){
+        btxt.textContent='Ajustando longitudes…';
+        days=await autoTrimWeek(days);
+      }
+      renderWeek(days);
+    }
+  }catch(e){
+    document.getElementById('w-out').innerHTML=`<div style="padding:16px"><div class="errmsg">Error: ${esc(e.message)}</div></div>`;
+  }finally{
+    btn.disabled=false;spin.style.display='none';btxt.textContent='Generar calendario (21 pushes)';
+  }
+}
+
+// ─── EXPORT EXCEL ─────────────────────────────────────────
+function exportXLS(){
+  if(!weekData)return;
+  const range=document.getElementById('w-range').value||'semana';
+  const rows=[['Día','Momento','Vertical','Título','Body','Chars Título','Chars Body','Status Título','Status Body']];
+  weekData.forEach(d=>{
+    d.pushes.forEach(p=>{
+      const tl=p.titulo.length,bl=p.body.length;
+      rows.push([
+        d.day,
+        p.momento,
+        p.vertical,
+        p.titulo,
+        p.body,
+        tl,bl,
+        tl<=35?'OK':tl<=38?'REVISAR':'SUPERA LÍMITE',
+        bl<=120?'OK':bl<=130?'REVISAR':'SUPERA LÍMITE'
+      ]);
+    });
+  });
+
+  const wb=XLSX.utils.book_new();
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+
+  // Column widths
+  ws['!cols']=[{wch:12},{wch:16},{wch:18},{wch:38},{wch:55},{wch:14},{wch:12},{wch:16},{wch:16}];
+
+  // Header style via cell format
+  const headerRange=XLSX.utils.decode_range(ws['!ref']);
+  for(let C=headerRange.s.c;C<=headerRange.e.c;C++){
+    const addr=XLSX.utils.encode_cell({r:0,c:C});
+    if(!ws[addr])continue;
+    ws[addr].s={font:{bold:true,color:{rgb:'FFFFFF'}},fill:{fgColor:{rgb:'FF441F'}},alignment:{horizontal:'center'}};
+  }
+
+  // Color rows by status
+  for(let R=1;R<rows.length;R++){
+    const tStat=rows[R][7],bStat=rows[R][8];
+    const hasIssue=tStat!=='OK'||bStat!=='OK';
+    if(hasIssue){
+      for(let C=0;C<=8;C++){
+        const addr=XLSX.utils.encode_cell({r:R,c:C});
+        if(ws[addr])ws[addr].s={fill:{fgColor:{rgb:'FFF3CD'}}};
+      }
+    }
+  }
+
+  XLSX.utils.book_append_sheet(wb,ws,'Pushes');
+
+  // Summary sheet
+  const sumRows=[['Resumen',''],['Total pushes',weekData.reduce((a,d)=>a+d.pushes.length,0)],['Días cubiertos',weekData.length],['Semana',range]];
+  const wsSum=XLSX.utils.aoa_to_sheet(sumRows);
+  wsSum['!cols']=[{wch:20},{wch:20}];
+  XLSX.utils.book_append_sheet(wb,wsSum,'Resumen');
+
+  XLSX.writeFile(wb,`pushes-${range.replace(/\s/g,'-')}.xlsx`);
+}
+
+// ─── INIT ─────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  const k=localStorage.getItem('rappi_pg_key');
+  if(k){document.getElementById('api-key-input').value=k;showApp();}
+});
+document.getElementById('api-key-input').addEventListener('keydown',e=>{if(e.key==='Enter')saveKey()});
+</script>
+</body>
+</html>
