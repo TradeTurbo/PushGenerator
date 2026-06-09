@@ -641,13 +641,37 @@ function buildSinglePrompt(){
   const obs=document.getElementById('s-obs').value;
   const activeTab=document.querySelector('#mode-single .ptab.active')?.dataset.t||'desc';
 
+  const dpVal=document.getElementById('s-dp').value||'';
+  const daVal=document.getElementById('s-da').value.trim();
+  const ddVal=document.getElementById('s-dd').value.trim();
+  const cbpVal=document.getElementById('s-cp').value||'';
+  const cbaVal=document.getElementById('s-ca').value.trim();
+  const cbmVal=document.getElementById('s-cm').value.trim();
+  const cbxVal=document.getElementById('s-cx').value.trim();
+  const rcqVal=document.getElementById('s-rq').value.trim();
+  const rcmVal=document.getElementById('s-rm').value.trim();
+  const rcaVal=document.getElementById('s-ra').value.trim();
+
   let promo='';
   if(activeTab==='desc'){
-    promo=`Tipo: ${document.getElementById('s-dp').value||''}% OFF\nProducto/categoría: ${document.getElementById('s-dd').value||''}\nAliado (única marca permitida): ${document.getElementById('s-da').value||''}`;
+    const aliado=daVal?`"${daVal}" — ÚNICA marca/nombre propio que puedes mencionar`:'NINGUNA — no uses marcas, nombres de restaurantes, ni nombres propios de ningún tipo';
+    promo=`Tipo de promoción: DESCUENTO DIRECTO
+Formato obligatorio en el copy: siempre escribe "${dpVal}% OFF" — nunca solo "${dpVal}%"
+Producto/categoría: ${ddVal||'general'}
+Aliado: ${aliado}`;
   }else if(activeTab==='cb'){
-    promo=`Tipo: Cashback ${document.getElementById('s-cp').value||''}%\nAliado: ${document.getElementById('s-ca').value||''}\nMínimo: ${document.getElementById('s-cm').value||''} | Máximo: ${document.getElementById('s-cx').value||''}`;
+    const aliado=cbaVal?`"${cbaVal}" — ÚNICA marca permitida`:'NINGUNA — no uses marcas ni nombres propios';
+    promo=`Tipo de promoción: CASHBACK
+Formato obligatorio: "${cbpVal}% de cashback" o "${cbpVal}% back" — nunca solo "${cbpVal}%"
+Aliado: ${aliado}
+${cbmVal?`Mínimo de compra: ${cbmVal}`:''}
+${cbxVal?`Máximo de devolución: ${cbxVal} en Rappicreditos`:''}`;
   }else{
-    promo=`Tipo: Rappicreditos ${document.getElementById('s-rq').value||''}\nMínimo: ${document.getElementById('s-rm').value||''}\nAliado: ${document.getElementById('s-ra').value||''}`;
+    const aliado=rcaVal?`"${rcaVal}" — ÚNICA marca permitida`:'NINGUNA — no uses marcas ni nombres propios';
+    promo=`Tipo de promoción: RAPPICREDITOS
+Créditos a ganar: ${rcqVal||''}
+${rcmVal?`Mínimo de compra: ${rcmVal}`:''}
+Aliado: ${aliado}`;
   }
 
   const hist=sessionHistory.slice(-3).map((h,i)=>`Push ${i+1}: Título: "${h.titulo}" | Body: "${h.body}"`).join('\n');
@@ -661,15 +685,24 @@ AGRESIVIDAD: ${aggr}
 
 PROMOCIÓN:
 ${promo}
-${obs?`\nOBSERVACIONES: ${obs}`:''}
+${obs?`\nOBSERVACIONES Y RESTRICCIONES ADICIONALES: ${obs}`:''}
 ${hist?`\nHISTORIAL RECIENTE (NO repetir conectores ni estructura de estos):\n${hist}`:''}
+
+RESTRICCIONES DE CARACTERES — OBLIGATORIO ANTES DE ESCRIBIR:
+- Cuenta los caracteres del título INCLUYENDO ESPACIOS. Si supera 35, reescribe más corto.
+- Cuenta los caracteres del body INCLUYENDO ESPACIOS. Si supera 120, reescribe más corto.
+- Títulos de referencia: "40% OFF en chelas hoy" = 21 chars ✓ | "Hora Loca Turbo: chelas y botanas" = 33 chars ✓
+
+RESTRICCIÓN DE NOMBRES PROPIOS:
+- PROHIBIDO usar cualquier marca, restaurante, empresa, producto o nombre propio QUE NO ESTÉ INDICADO EXPLÍCITAMENTE en el campo "Aliado" de arriba.
+- Si el aliado es NINGUNA: el copy debe ser 100% genérico. Nada de "Modelo", "Costco", "Oxxo", "Cancino" ni ningún nombre.
 
 VERSIONES REQUERIDAS:
 - V1 URGENTE: máxima presión, acción inmediata, escasez/tiempo.
 - V2 INTERMEDIA: balance beneficio + urgencia moderada.
 - V3 HVU: tono aspiracional, chill, opinionado. El HVU ya sabe el valor de Rappi.
 
-FORMATO EXACTO (sin texto adicional):
+FORMATO EXACTO (sin texto adicional antes ni después):
 ===V1===
 Título: [texto]
 Body: [texto]
@@ -711,6 +744,18 @@ REGLAS DE DISTRIBUCIÓN:
 - Fin de semana: tono más relajado, anchors de plan y momento.
 - Si hay capability educativa global, incluir al menos 2 pushes de ese tipo en la semana.
 
+RESTRICCIÓN CRÍTICA DE NOMBRES PROPIOS:
+- PROHIBIDO usar cualquier marca, restaurante, empresa o nombre propio que NO esté indicado explícitamente en el campo "Marcas/restaurantes" de cada día.
+- Si ese campo dice "ninguna específica": el copy debe ser 100% genérico. Sin "Modelo", "Costco", "Oxxo", "Cancino" ni ningún nombre propio.
+
+RESTRICCIÓN DE FORMATO DE DESCUENTO:
+- Si la promo es % OFF: siempre escribir "X% OFF" — nunca solo "X%".
+- Si la promo es cashback: siempre escribir "X% de cashback" o "X% back" — nunca solo "X%".
+
+RESTRICCIONES DE CARACTERES — OBLIGATORIO:
+- Título: máximo 35 caracteres INCLUYENDO ESPACIOS. Cuenta antes de escribir.
+- Body: máximo 120 caracteres INCLUYENDO ESPACIOS.
+
 FORMATO EXACTO (sin texto adicional, sin explicaciones):
 ===DÍA: [nombre]===
 PUSH 1 | [Momento] | [Vertical]
@@ -737,11 +782,19 @@ function parseSingle(txt){
   parts.forEach((p,i)=>{
     const tm=p.match(/Título:\s*(.+)/);
     const bm=p.match(/Body:\s*(.+)/);
-    if(tm&&bm)versions.push({label:labels[i]||`V${i+1}`,titulo:tm[1].trim(),body:bm[1].trim()});
+    if(tm&&bm)versions.push({
+      label:labels[i]||`V${i+1}`,
+      titulo:tm[1].trim().replace(/\s+/g,' '),
+      body:bm[1].trim().replace(/\s+/g,' ')
+    });
   });
   if(!versions.length){
     const all=[...txt.matchAll(/Título:\s*(.+)\nBody:\s*(.+)/g)];
-    all.forEach((m,i)=>versions.push({label:labels[i]||`V${i+1}`,titulo:m[1].trim(),body:m[2].trim()}));
+    all.forEach((m,i)=>versions.push({
+      label:labels[i]||`V${i+1}`,
+      titulo:m[1].trim().replace(/\s+/g,' '),
+      body:m[2].trim().replace(/\s+/g,' ')
+    }));
   }
   return versions;
 }
@@ -765,10 +818,10 @@ function parseWeek(txt){
       const bm=pb.match(/Body:\s*(.+)/);
       if(tm&&bm){
         pushes.push({
-          momento:(momMatch?momMatch[1]:meta.split('|')[0]||'').trim(),
-          vertical:(vertMatch?vertMatch[1]:meta.split('|')[1]||'Turbo').trim(),
-          titulo:tm[1].trim(),
-          body:bm[1].trim()
+          momento:(momMatch?momMatch[1]:meta.split('|')[0]||'').trim().replace(/\s+/g,' '),
+          vertical:(vertMatch?vertMatch[1]:meta.split('|')[1]||'Turbo').trim().replace(/\s+/g,' '),
+          titulo:tm[1].trim().replace(/\s+/g,' '),
+          body:bm[1].trim().replace(/\s+/g,' ')
         });
       }
     });
