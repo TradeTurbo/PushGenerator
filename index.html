@@ -423,9 +423,9 @@ const WEEKEND_OVERRIDE = {
 
 const BRIEF = `Eres un experto en copy para push notifications de Rappi México, especializado en la vertical Turbo y en el perfil HVU (High Value User).
 
-REGLAS ABSOLUTAS:
+REGLAS DE ESTILO:
 - Tono conversacional: como contarle una noticia a un amigo. Casual, directo, valioso.
-- Spanglish natural: máximo 1-2 palabras en inglés por copy (cool, top, trendy, plan, MUST, deal, weekend, finde, brunch, healthy, fresh, vibe, ready, deli). Sin comillas ni itálicas.
+- Spanglish natural: máximo 1-2 palabras en inglés por copy (cool, top, deal, weekend, finde, brunch, healthy, fresh, vibe, ready, deli). Sin comillas ni itálicas.
 - PROHIBIDO: "increíble", "experiencia única", "no te pierdas", "disfruta", "aprovecha esta increíble", "exclusivo".
 - Sin emojis salvo que el usuario los pida.
 - Sin Oxford comma en español.
@@ -439,35 +439,82 @@ REGLAS TURBO:
 
 TURBO RESTAURANTES:
 - Siempre incluir "en 15 min".
-- Value props: "llega caliente", "sin filas", "sin hielo derretido".
+- Value props: "llega caliente", "sin filas".
 
-═══ LÍMITES DE CARACTERES — REGLA CRÍTICA ═══
-Los caracteres se cuentan INCLUYENDO ESPACIOS. Esto es innegociable: el texto se mostrará en pantallas de celular y si supera el límite se corta visualmente.
+══════════════════════════════════════════
+LÍMITES DE CARACTERES — REGLA ABSOLUTA #1
+Los caracteres se cuentan INCLUYENDO ESPACIOS.
+TÍTULO: MÁXIMO 35 CARACTERES. Si tu título tiene 36 o más, ES INCORRECTO. Bórralo y empieza de nuevo.
+BODY: MÁXIMO 120 CARACTERES. Si tu body tiene 121 o más, ES INCORRECTO. Bórralo y empieza de nuevo.
+══════════════════════════════════════════
 
-TÍTULO: MÁXIMO 35 caracteres (espacios incluidos). NUNCA superar este número.
-BODY: MÁXIMO 120 caracteres (espacios incluidos). NUNCA superar este número.
+CALIBRACIÓN CON EJEMPLOS REALES — MEMORIZA ESTAS LONGITUDES:
+Títulos cortos (14-20 chars) ✓
+  "Viernes de pre" = 14
+  "¿Dura la noche?" = 15
+  "Hoy toca brindis" = 16
+  "18 OFF en New Mix" = 18 (pero "30% OFF en New Mix" = 18)
+  "¡Se armó el Jueves!" = 19
+  "¿Listo para rumbear?" = 20
 
-CALIBRACIÓN — ejemplos reales contados carácter por carácter:
-"Turbo tiene promo mundialista" = 29 caracteres ✓
-"50% de cashback, en 10 min" = 26 caracteres ✓
-"Hora Loca Turbo: chelas y botanas" = 33 caracteres ✓
-"40% OFF en chelas y botanas hoy" = 31 caracteres ✓
-"Turbo: chelas y botanas al 40%" = 30 caracteres ✓
+Títulos medios (21-28 chars) ✓
+  "Docena de Huevo a $46" = 21
+  "Sol Clamato a solo $24" = 22
+  "Chip's Fuego a solo $37" = 23
+  "¡Adios a los mosquitos!" = 23
+  "¡Qué ofertón trae Turbo!" = 24
+  "Mango y Kiwi con 60% OFF" = 24
+  "Vino Espumoso con 30% OFF" = 25
+  "Turbo con 50% de cashback" = 25
+  "Arma tu mimosa con 60% OFF" = 26
+  "30% OFF en tus chelas y burbujas" = 32
 
-ANTES de escribir un título, cuenta mentalmente los caracteres. Si tienes dudas entre dos opciones, elige la más corta.
-Si un título que quieres usar tiene 36+ caracteres, elimina una palabra, no la reemplaces por otra.
+Títulos al límite (29-35 chars) ✓
+  "Un respiro para tu bolsillo hoy" = 31
+  "El mercado de diario en 10 minutos" = 34 ← casi en el límite
+  "Hora Loca Turbo: chelas y botanas" = 33
+  "¿Tu refri da eco? ¡Llénalo hoy!" = 31
+  "Tu Michelob helada y con 27% OFF" = 32
+  "¡Pum! 30% en frescos e hidratación" = 34 ← casi en el límite
 
-PATRONES DE TÍTULO (todos caben en ≤35 caracteres):
-- Pregunta directa: "¿Te falta aguacate para hoy?" (28)
-- Producto + precio: "Starbucks helado a $59" (21)
-- Statement: "Cancino is always a good idea" (29)
-- Urgencia: "3 horas, 50% en Modelo" (22)
-- Momento: "Bowl ideal para el martes" (24)
+TÍTULOS PROHIBIDOS — superan 35 chars:
+  "60% OFF en Leche Lala seleccionada" = 34 ← OK pero cuidado
+  Cualquier cosa más larga que "El mercado de diario en 10 minutos" (34) está en zona de riesgo.
 
-BODY — máximo 120 caracteres con espacios. Estructura recomendada:
-[Beneficio concreto]. [Condición si aplica]. [Value prop Turbo: "en 10 min" o "en 15 min"].
+Bodys buenos (≤120 chars) ✓
+  "Pide tus licores favoritos con 30% OFF en Turbo" = 47
+  "Para el bajón o el antojo, el precio más bajo está en Turbo" = 59
+  "30% OFF en Raid. Pide por Turbo y recibe en 10 min" = 50
+  "No salgas al calor. Te llega en 10 min con Turbo" = 48
+  "Tus chelas y hielos al 30% OFF directo a tu mesa. Pide en Turbo y recibe en 10 min" = 82
+  "50% OFF en Modelo y botanas Pepsico, solo por 3 horas. Pide ahorita y te llega en 10 min." = 89
+  "Arranca el martes con tu súper completo. Hasta $200 de regreso y te lo llevamos en 10 min." = 90
 
-CONECTORES DE BODY: "Y es de [marca]…", "Y justo ahorita está a $X", "Acuérdate que en Rappi…", "¡Por fin!", "Literal", "Por algo es…"`;
+REGLA PRÁCTICA: un body de ~90 chars es "lleno". Un body de 120 chars es el límite absoluto.
+Si tu body tiene más de 2 oraciones largas, ya probablemente pasaste de 120 chars.
+
+══════════════════════════════════════════
+RESTRICCIÓN DE NOMBRES PROPIOS — REGLA ABSOLUTA #2
+PROHIBIDO usar cualquier marca, restaurante, empresa o nombre propio que NO esté en el campo "Aliado" del brief.
+Si el aliado es NINGUNO: copy 100% genérico. Sin Modelo, Costco, Oxxo, Heineken, Bachoco, Bimbo ni ningún nombre.
+══════════════════════════════════════════
+
+FORMATO DE DESCUENTO — REGLA ABSOLUTA #3
+- % OFF: siempre "X% OFF" — nunca solo "X%"
+- Cashback: siempre "X% de cashback" o "X% back" — nunca solo "X%"
+- Rappicreditos: siempre mencionar la cantidad exacta
+
+PATRONES DE TÍTULO (todos caben en ≤35 chars):
+- Pregunta directa: "¿Tu refri da eco? ¡Llénalo hoy!" (31)
+- Producto + precio: "Sol Clamato a solo $24" (22)
+- Statement opinionado: "Ya huele a finde" (16)
+- Urgencia con descuento: "30% OFF en New Mix" (18)
+- Momento del día: "Viernes de pre" (14)
+
+PATRONES DE BODY (≤120 chars):
+[Beneficio concreto con número]. [Condición si aplica]. [Value prop: "en 10 min" o "en 15 min"].
+Máximo 2 oraciones. Si son 3, una sobra.`;
+
 
 
 // ─── STATE ────────────────────────────────────────────────
@@ -842,11 +889,13 @@ function renderSingle(versions){
   versions.forEach((v,i)=>{
     const tl=v.titulo.length,bl=v.body.length;
     const cd=`Título: ${v.titulo}\nBody: ${v.body}`;
+    const trimWarn=v.hardTrimmed?`<div style="background:rgba(255,214,0,.08);border:1px solid rgba(255,214,0,.2);border-radius:6px;padding:6px 10px;font-size:10px;color:var(--yellow);font-family:var(--mono);margin-bottom:8px">⚠ Recortado al límite — revisa que el mensaje sea coherente</div>`:'';
     html+=`<div class="pv">
       <div class="pvh">
         <span class="vbadge ${bc[i]}">${vl[i]}</span>
         <button class="cpbtn" id="cp${i}" onclick="doCopy('cp${i}',\`${cd.replace(/`/g,'\\`')}\`)">Copiar</button>
       </div>
+      ${trimWarn}
       <div class="pf"><div class="pflbl">Título <span class="cc ${ccClass(tl,35)}">${tl}/35</span></div><div class="ptxt">${esc(v.titulo)}</div></div>
       <div class="pf"><div class="pflbl">Body <span class="cc ${ccClass(bl,120)}">${bl}/120</span></div><div class="ptxt">${esc(v.body)}</div></div>
     </div>`;
@@ -909,7 +958,29 @@ async function callAPI(userMsg, maxTok=1800){
   return d.content?.[0]?.text||'';
 }
 
-// ─── AUTO TRIM ────────────────────────────────────────────
+// ─── HARD ENFORCE ─────────────────────────────────────────
+// Last resort: if model still fails after autoTrim, slice hard and flag it
+function hardEnforce(versions){
+  return versions.map(v=>{
+    let t=v.titulo, b=v.body, warned=false;
+    if(t.length>35){t=t.slice(0,35).trimEnd();warned=true;}
+    if(b.length>120){b=b.slice(0,120).trimEnd();warned=true;}
+    return{...v,titulo:t,body:b,hardTrimmed:warned};
+  });
+}
+
+function hardEnforceWeek(days){
+  return days.map(d=>({
+    ...d,
+    pushes:d.pushes.map(p=>{
+      let t=p.titulo,b=p.body,warned=false;
+      if(t.length>35){t=t.slice(0,35).trimEnd();warned=true;}
+      if(b.length>120){b=b.slice(0,120).trimEnd();warned=true;}
+      return{...p,titulo:t,body:b,hardTrimmed:warned};
+    })
+  }));
+}
+
 // For each version that exceeds limits, ask the model to trim it
 async function autoTrim(versions){
   const toFix=versions.filter(v=>v.titulo.length>35||v.body.length>120);
@@ -1007,6 +1078,7 @@ async function genSingle(){
         btxt.textContent='Ajustando longitud…';
         v=await autoTrim(v);
       }
+      v=hardEnforce(v); // always enforce — no exceptions
       renderSingle(v);
     }
   }catch(e){
@@ -1038,6 +1110,7 @@ async function genWeek(){
         btxt.textContent='Ajustando longitudes…';
         days=await autoTrimWeek(days);
       }
+      days=hardEnforceWeek(days); // always enforce — no exceptions
       renderWeek(days);
     }
   }catch(e){
